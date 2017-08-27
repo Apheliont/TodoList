@@ -1,52 +1,77 @@
 /**
  * Created by Aphel on 11.09.2016.
+ * Говнокод, тестирую работу стореджа
  */
-$("i").on('click', function (){
-    $("#addNew").toggle("slide");
-});
+//создаем объект состояния для сохранения в localStorage
+let state = {
+  todoItems: []
+};
 
-$("#addNew").on('keypress', function(event) {
+window.addEventListener('load', init);
+
+function init() {
+  //восстановить данные из localStorage, повтор кода ахтунг :)
+  getSavedData();
+
+  $('.header__plus-btn').on('click', function () {
+    $('.add-new-input').toggle('slide');
+  });
+
+
+  $('.add-new-input').on('keypress', function(event) {
     if(event.which === 13)
     {
-        //создаем новый элемент списка
-        var newLi = document.createElement("li");
+      //сохраняем значение в объекте состояния
+      state.todoItems.push({data: $(this).val(), completed: false});
+      //записать данные объекта состояния в localStorage
+      window.localStorage.setItem('todoData', JSON.stringify(state));
+      $(this).val("");
 
-
-        // $(newDiv).addClass("taskItem");
-        // $(newDiv).html('<span class="trashBin"><i class="fa fa-trash" aria-hidden="true"></i></span>' +
-        //     '<p class="textTodo">' + $(this).val() + '</p>');
-        // $(newDiv).on('click', function (event) {
-        //     $(this).toggleClass("taskDone");
-        //
-        // });
-        // $(newDiv).on('mouseenter', function () {
-        //     $(this).find(".trashBin").toggle("slide");
-        //     $(this).find(".trashBin").click(function () {$(this).parent(".taskItem").remove();});
-        // });
-        // $(newDiv).on('mouseleave', function () {
-        //     $(this).find(".trashBin").toggle("slide");
-        // });
-
-
-        //помещаем внутрь этого элемента данные из формы ввода
-        $(newLi).html('<span class="trashBin"><i class="fa fa-trash" aria-hidden="true"></i></span>' + '<p class="textTodo">' + $(this).val() + '</p>');
-        //при клике по тесту он должен стать бледным и перечеркнутым
-        $(newLi).click(function(){
-            $(this).find(".textTodo").toggleClass("taskDone");
-        });
-        //при клике на корзинке удаляется вся Li'йка
-        $(newLi).on('click', 'span', function() {
-            $(this).parent().fadeOut(function(){
-                $(this).remove();
-            });
-        });
-
-
-        $("ul").append(newLi);
-        $(this).val("");
-
+      getSavedData();
     }
-});
+  });
+}
 
+function createNewLi(obj) {
+  let newLi = document.createElement('li');
+  newLi.classList.add('todo-list__item');
+
+  $(newLi).html('<span class="trashBin"><i class="fa fa-trash" aria-hidden="true"></i></span>'
+    + '<p class="todo-text">' + obj.data + '</p>');
+
+  if (obj.completed) {
+    $(newLi).find('.todo-text').addClass('taskDone');
+  }
+
+  $(newLi).click(function(){
+    $(this).find('.todo-text').toggleClass('taskDone');
+    let itemNum = Number($(this).index());
+    state.todoItems[itemNum].completed = !state.todoItems[itemNum].completed;
+    window.localStorage.setItem('todoData', JSON.stringify(state));
+  });
+  //при клике на корзинке удаляется вся Li'йка
+  $(newLi).on('click', 'span', function(e) {
+    e.stopImmediatePropagation();
+    //удалить элемент из объекта состояния
+    let itemNum = Number($(this).parent().index());
+    state.todoItems.splice(itemNum, 1);
+    window.localStorage.setItem('todoData', JSON.stringify(state));
+    $(this).parent().fadeOut(function(){
+      getSavedData();
+    });
+  });
+  $('.todo-list').append(newLi);
+}
+
+function getSavedData() {
+  $('.todo-list').html('');
+  let data = window.localStorage.getItem('todoData');
+  if (data) {
+    state = JSON.parse(data);
+    state.todoItems.forEach(function(dataObj){
+      createNewLi(dataObj);
+    });
+  }
+}
 
 //тест

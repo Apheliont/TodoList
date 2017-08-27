@@ -7,18 +7,18 @@
     <link href="https://fonts.googleapis.com/css?family=Coming+Soon" rel="stylesheet">
     <link rel="stylesheet" href="todo.css">
     <script src="../jQuery/jquery-3.1.0.js"></script>
+    <script src="todo.js"></script>
 </head>
 <body>
-<div id="container">
-    <div id="title">
-        <h2>To-Do List</h2>
-        <i id="plus" class="fa fa-plus fa-lg" aria-hidden="true"></i>
-    </div>
+<div class="container">
+    <header class="header">
+        <h2 class="header__title">To-Do List</h2>
+        <i class="header__plus-btn fa fa-plus fa-lg" aria-hidden="true"></i>
+    </header>
+    <input class="add-new-input" type="text" placeholder="Add New Todo">
+    <ul class="todo-list">
 
-        <input id="addNew" type="text" placeholder="Add New Todo">
-        <ul></ul>
-
+    </ul>
 </div>
-<script src="todo.js"></script>
 </body>
 </html>
